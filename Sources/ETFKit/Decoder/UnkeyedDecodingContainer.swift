@@ -76,16 +76,6 @@ internal struct _ETFUnkeyedDecodingContainer : UnkeyedDecodingContainer {
         Int32(try decode(Int.self))
     }
 
-    mutating func decode(_ type: Int64.Type) throws -> Int64 {
-        decoder.codingPath.append(_ETFKey(index: currentIndex))
-        defer { decoder.codingPath.removeLast() }
-
-        throw DecodingError.typeMismatch(
-            type,
-            .init(codingPath: decoder.codingPath, debugDescription: "Int64 decode is not supported")
-        )
-    }
-
     mutating func decode(_ type: UInt.Type) throws -> UInt {
         UInt(try decode(Int.self))
     }
@@ -100,16 +90,6 @@ internal struct _ETFUnkeyedDecodingContainer : UnkeyedDecodingContainer {
 
     mutating func decode(_ type: UInt32.Type) throws -> UInt32 {
         UInt32(try decode(Int.self))
-    }
-
-    mutating func decode(_ type: UInt64.Type) throws -> UInt64 {
-        decoder.codingPath.append(_ETFKey(index: currentIndex))
-        defer { decoder.codingPath.removeLast() }
-
-        throw DecodingError.typeMismatch(
-            type,
-            .init(codingPath: decoder.codingPath, debugDescription: "UInt64 decode is not supported")
-        )
     }
 
     /// Decodes a value of the given type.
@@ -181,13 +161,10 @@ internal struct _ETFUnkeyedDecodingContainer : UnkeyedDecodingContainer {
     }
 
     mutating func decodeIfPresent(_ type: Int64.Type) throws -> Int64? {
-        decoder.codingPath.append(_ETFKey(index: currentIndex))
-        defer { decoder.codingPath.removeLast() }
-
-        throw DecodingError.typeMismatch(
-            type,
-            .init(codingPath: decoder.codingPath, debugDescription: "Int64 decode is not supported")
-        )
+        if let val = try decodeIfPresent(Int.self) {
+            return Int64(val)
+        }
+        return nil
     }
 
     mutating func decodeIfPresent(_ type: UInt.Type) throws -> UInt? {
@@ -219,13 +196,10 @@ internal struct _ETFUnkeyedDecodingContainer : UnkeyedDecodingContainer {
     }
 
     mutating func decodeIfPresent(_ type: UInt64.Type) throws -> UInt64? {
-        decoder.codingPath.append(_ETFKey(index: currentIndex))
-        defer { decoder.codingPath.removeLast() }
-
-        throw DecodingError.typeMismatch(
-            type,
-            .init(codingPath: decoder.codingPath, debugDescription: "UInt64 decode is not supported")
-        )
+        if let val = try decodeIfPresent(Int.self) {
+            return UInt64(val)
+        }
+        return nil
     }
 
     /// Decodes a value of the given type, if present.

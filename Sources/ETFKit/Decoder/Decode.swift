@@ -37,20 +37,38 @@ extension ETFKit {
         idx += 5
         return data.subdata(in: idx-4..<idx).toInt32()
     }
-    // SMALL_BIG_EXT (Unused)
-    internal static func decodingValue(data: Data, from idx: inout Int) throws -> Decimal {
+    // SMALL_BIG_EXT Signed
+    internal static func decodingValue(data: Data, from idx: inout Int) throws -> Int64 {
         guard data[idx] == Tag.SMALL_BIG.rawValue else {
             throw ETFDecodingError.MismatchingTag("Expected tag \(Tag.SMALL_BIG), got \(data[idx])")
         }
         idx += 3
         let num = Int(data[idx - 2])
         let sign = data[idx - 1]
-        var sum: Decimal = 0
-        for n in 0..<num {
-            sum += Decimal(data[idx])*pow(256,n)
+        var pos = 0
+        var sum: Int64 = 0
+        for _ in 0..<num {
+            sum |= Int64(data[idx]) << pos
+            pos += 8
             idx += 1
         }
         if sign == 1 { sum *= -1 }
+        return sum
+    }
+    // SMALL_BIG_EXT Unsigned
+    internal static func decodingValue(data: Data, from idx: inout Int) throws -> UInt64 {
+        guard data[idx] == Tag.SMALL_BIG.rawValue else {
+            throw ETFDecodingError.MismatchingTag("Expected tag \(Tag.SMALL_BIG), got \(data[idx])")
+        }
+        idx += 3
+        let num = Int(data[idx - 2])
+        var pos = 0
+        var sum: UInt64 = 0
+        for _ in 0..<num {
+            sum |= UInt64(data[idx]) << pos
+            pos += 8
+            idx += 1
+        }
         return sum
     }
     // NEW_FLOAT_EXT
@@ -105,6 +123,13 @@ extension ETFKit {
         case .LIST: return try decodingArray(data: data, from: &idx)
         case .BINARY: return try decodingValue(data: data, from: &idx) as String
         case .SMALL_AROM: return try decodingSmallAtom(data: data, from: &idx) as Any?
+        case .SMALL_BIG:
+            let signed = data[idx + 2] != 0
+            if signed {
+                return try decodingValue(data: data, from: &idx) as Int64
+            } else {
+                return try decodingValue(data: data, from: &idx) as UInt64
+            }
         default: throw ETFDecodingError.UnhandledTag("Tag \(data[idx]) is not handled")
         }
     }

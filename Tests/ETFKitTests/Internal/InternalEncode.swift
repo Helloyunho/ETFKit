@@ -19,6 +19,17 @@ final class InternalEncodeTests: XCTestCase {
             "g2L///wA",
             "Positive Int32"
         )
+        
+        XCTAssertEqual(
+            try ETFKit.encode(92184902184921904).base64EncodedString(),
+            "g24IADDrYhyugUcB",
+            "UInt64"
+        )
+        XCTAssertEqual(
+            try ETFKit.encode(-92184902184921904).base64EncodedString(),
+            "g24IATDrYhyugUcB",
+            "Int64"
+        )
     }
 
     func testList() throws {

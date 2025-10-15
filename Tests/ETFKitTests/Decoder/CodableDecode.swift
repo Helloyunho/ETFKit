@@ -31,11 +31,11 @@ final class CodableDecodeTests: XCTestCase {
         let g: UInt32?
     }
 
-    struct UnsupportedPrimitive: Codable {
+    struct LongPrimitive: Codable, Equatable {
         let signed: Int64
         let unsigned: UInt64
     }
-    struct UnsupportedPrimitiveOptionals: Codable {
+    struct LongPrimitiveOptionals: Codable, Equatable {
         let signed: Int64?
         let unsigned: UInt64?
     }
@@ -115,13 +115,17 @@ final class CodableDecodeTests: XCTestCase {
             "Struct with optional primitive types, with empty map"
         )
 
-        XCTAssertThrowsError(
-            try ETFDecoder().decode(UnsupportedPrimitive.self, from: Data(base64Encoded: "g3QAAAACbQAAAAZzaWduZWRGw3R4GuHGLrNtAAAACHVuc2lnbmVkRkI1PHHgIgAA")!),
-            "Unsupported 64-bit types"
+        XCTAssertEqual(
+            try ETFDecoder().decode(LongPrimitive.self, from: Data(base64Encoded: "g3QAAAACbQAAAAZzaWduZWRuCAEw62IcroFHAW0AAAAIdW5zaWduZWRuCAAw62IcroFHAQ==")!),
+            LongPrimitive(signed: -92184902184921904, unsigned: 92184902184921904),
+            "64-bit types"
         )
-        XCTAssertThrowsError(
-            try ETFDecoder().decode(UnsupportedPrimitiveOptionals.self, from: Data(base64Encoded: "g3QAAAAA")!),
-            "Unsupported 64-bit types (optionals)"
+        XCTAssertEqual(
+            try ETFDecoder().decode(LongPrimitiveOptionals.self, from: Data(base64Encoded: "g3QAAAAA")!),
+            LongPrimitiveOptionals(
+                signed: nil, unsigned: nil
+            ),
+            "64-bit types (optionals)"
         )
     }
 

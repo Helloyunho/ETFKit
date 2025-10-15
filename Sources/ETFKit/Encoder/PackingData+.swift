@@ -24,6 +24,27 @@ internal extension Data {
         append(ETFKit.Tag.INTEGER.rawValue) // Tag
         append(val.bigEndian.data) // 32-bit val
     }
+    // SMALL_BIG_EXT Signed
+    mutating func appendValue(_ val: Int64) {
+        append(ETFKit.Tag.SMALL_BIG.rawValue)
+        var val = val
+        var sign: UInt8 = val < 0 ? 1 : 0
+        if val < 0 {
+            val *= -1
+        }
+        let data = val.littleEndian.data
+        append(UInt8(data.count).data)
+        append(sign)
+        append(data)
+    }
+    // SMALL_BIG_EXT Unsigned
+    mutating func appendValue(_ val: UInt64) {
+        append(ETFKit.Tag.SMALL_BIG.rawValue)
+        let data = val.littleEndian.data
+        append(UInt8(data.count).data)
+        append(0)
+        append(data)
+    }
     // NEW_FLOAT_EXT
     mutating func appendValue(_ val: Double) {
         append(ETFKit.Tag.NEW_FLOAT.rawValue) // Tag
@@ -57,10 +78,20 @@ internal extension Data {
     }
 
     mutating func appendAny(_ data: Any) throws {
-        if let data = data as? Int {
+        if let data = data as? Int64 {
+            appendValue(data)
+        } else if let data = data as? UInt64 {
+            appendValue(data)
+        } else if let data = data as? Int {
             if data >= 0, data <= UInt8.max {
                 appendValue(UInt8(data))
-            } else { appendValue(Int32(data)) }
+            } else if data >= Int32.min, data <= Int32.max {
+                appendValue(Int32(data))
+            } else if data < 0 {
+                appendValue(Int64(data))
+            } else {
+                appendValue(UInt64(data))
+            }
         } else if let data = data as? Double {
             appendValue(data)
         } else if let data = data as? String {

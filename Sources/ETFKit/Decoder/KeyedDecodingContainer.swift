@@ -86,14 +86,6 @@ internal struct _ETFKeyedDecodingContainer<K : CodingKey> : KeyedDecodingContain
         Int32(try decode(Int.self, forKey: key))
     }
 
-    func decode(_ type: Int64.Type, forKey key: Self.Key) throws -> Int64 {
-        // Int64(try decode(Int.self, forKey: key))
-        throw DecodingError.typeMismatch(
-            type,
-            .init(codingPath: decoder.codingPath, debugDescription: "Int64 decode is not supported")
-        )
-    }
-
     func decode(_ type: UInt.Type, forKey key: Self.Key) throws -> UInt {
         UInt(try decode(Int.self, forKey: key))
     }
@@ -108,13 +100,6 @@ internal struct _ETFKeyedDecodingContainer<K : CodingKey> : KeyedDecodingContain
 
     func decode(_ type: UInt32.Type, forKey key: Self.Key) throws -> UInt32 {
         UInt32(try decode(Int.self, forKey: key))
-    }
-
-    func decode(_ type: UInt64.Type, forKey key: Self.Key) throws -> UInt64 {
-        throw DecodingError.typeMismatch(
-            type,
-            .init(codingPath: decoder.codingPath, debugDescription: "UInt64 decode is not supported")
-        )
     }
 
     /// Decodes a value of the given type for the given key.
@@ -164,13 +149,6 @@ internal struct _ETFKeyedDecodingContainer<K : CodingKey> : KeyedDecodingContain
         } else { return nil }
     }
 
-    func decodeIfPresent(_ type: Int64.Type, forKey key: Self.Key) throws -> Int64? {
-        throw DecodingError.typeMismatch(
-            type,
-            .init(codingPath: decoder.codingPath, debugDescription: "Int64 decode is not supported")
-        )
-    }
-
     func decodeIfPresent(_ type: UInt.Type, forKey key: Self.Key) throws -> UInt? {
         if let val = try decodeIfPresent(Int.self, forKey: key) {
             return UInt(val)
@@ -193,13 +171,6 @@ internal struct _ETFKeyedDecodingContainer<K : CodingKey> : KeyedDecodingContain
         if let val = try decodeIfPresent(Int.self, forKey: key) {
             return UInt32(val)
         } else { return nil }
-    }
-
-    func decodeIfPresent(_ type: UInt64.Type, forKey key: Self.Key) throws -> UInt64? {
-        throw DecodingError.typeMismatch(
-            type,
-            .init(codingPath: decoder.codingPath, debugDescription: "UInt64 decode is not supported")
-        )
     }
 
     /// Decodes a value of the given type for the given key, if present.

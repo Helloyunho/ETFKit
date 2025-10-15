@@ -28,13 +28,6 @@ extension _ETFDecoder: SingleValueDecodingContainer {
         Int32(try decode(Int.self))
     }
 
-    func decode(_ type: Int64.Type) throws -> Int64 {
-        throw DecodingError.typeMismatch(
-            Int64.self,
-            .init(codingPath: codingPath, debugDescription: "Int64 decoding is currently unsupported")
-        )
-    }
-
     func decode(_ type: UInt.Type) throws -> UInt {
         UInt(try decode(Int.self))
     }
@@ -49,13 +42,6 @@ extension _ETFDecoder: SingleValueDecodingContainer {
 
     func decode(_ type: UInt32.Type) throws -> UInt32 {
         UInt32(try decode(Int.self))
-    }
-
-    func decode(_ type: UInt64.Type) throws -> UInt64 {
-        throw DecodingError.typeMismatch(
-            UInt64.self,
-            .init(codingPath: codingPath, debugDescription: "UInt64 decoding is currently unsupported")
-        )
     }
 
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
